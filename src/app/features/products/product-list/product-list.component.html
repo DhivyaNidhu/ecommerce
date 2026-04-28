@@ -1,0 +1,105 @@
+<div class="product-list-page">
+  <div class="page-header">
+    <div class="container">
+      <div class="header-content">
+        <div>
+          <h1>
+            @if (searchQuery) { Search: "{{ searchQuery }}" }
+            @else if (selectedCategory) { {{ getCategoryName(selectedCategory) }} }
+            @else { All Products }
+          </h1>
+          <p class="result-count">{{ products.length }} products found</p>
+        </div>
+        <div class="sort-controls">
+          <label>Sort by:</label>
+          <select [(ngModel)]="filter.sortBy" (change)="onSortChange(filter.sortBy!)">
+            @for (opt of sortOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container page-body">
+    <!-- Sidebar Filters -->
+    <aside class="filters-sidebar">
+      <div class="filters-header">
+        <h3>Filters</h3>
+        @if (activeFilterCount > 0) {
+          <button class="clear-btn" (click)="clearFilters()">Clear all ({{ activeFilterCount }})</button>
+        }
+      </div>
+
+      <div class="filter-group">
+        <h4>Category</h4>
+        <ul class="category-filter">
+          <li>
+            <button [class.active]="!selectedCategory" (click)="onCategoryChange(undefined)">
+              All Products
+            </button>
+          </li>
+          @for (cat of categories; track cat.id) {
+            <li>
+              <button [class.active]="selectedCategory === cat.id" (click)="onCategoryChange(cat.id)">
+                <span>{{ cat.icon }}</span> {{ cat.name }}
+                <span class="count">({{ cat.productCount }})</span>
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="filter-group">
+        <h4>Price Range</h4>
+        <div class="price-inputs">
+          <div class="price-input-group">
+            <label>Min</label>
+            <input type="number" [(ngModel)]="priceRange.min" [min]="0" [max]="priceRange.max" (change)="onFilterChange()" />
+          </div>
+          <span class="price-separator">—</span>
+          <div class="price-input-group">
+            <label>Max</label>
+            <input type="number" [(ngModel)]="priceRange.max" [min]="priceRange.min" [max]="maxPrice" (change)="onFilterChange()" />
+          </div>
+        </div>
+        <div class="price-display">₹{{ priceRange.min }} – ₹{{ priceRange.max }}</div>
+      </div>
+
+      <div class="filter-group">
+        <h4>Minimum Rating</h4>
+        <div class="rating-filter">
+          @for (rating of [4.5, 4, 3.5, 3]; track rating) {
+            <button
+              [class.active]="filter.minRating === rating"
+              (click)="filter.minRating = filter.minRating === rating ? undefined : rating; onFilterChange()"
+            >
+              ★ {{ rating }}+
+            </button>
+          }
+        </div>
+      </div>
+    </aside>
+
+    <!-- Products Grid -->
+    <main class="products-section">
+      @if (loading) {
+        <app-loading-spinner message="Loading products..."></app-loading-spinner>
+      } @else if (products.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or search query</p>
+          <button class="btn-primary" (click)="clearFilters()">Clear Filters</button>
+        </div>
+      } @else {
+        <div class="products-grid">
+          @for (product of products; track product.id) {
+            <app-product-card [product]="product"></app-product-card>
+          }
+        </div>
+      }
+    </main>
+  </div>
+</div>

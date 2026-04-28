@@ -1,0 +1,31 @@
+<div class="wishlist-page">
+  <div class="container">
+    <div class="page-header">
+      <h1>My Wishlist</h1>
+      @if (wishlist.length > 0) {
+        <div class="header-actions">
+          <button class="btn-add-all" (click)="addAllToCart()">
+            Add All to Cart
+          </button>
+          <button class="btn-clear" (click)="clearWishlist()">Clear Wishlist</button>
+        </div>
+      }
+    </div>
+
+    @if (wishlist.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">❤️</div>
+        <h2>Your wishlist is empty</h2>
+        <p>Save items you love and come back to them later.</p>
+        <a routerLink="/products" class="btn-shop">Browse Products</a>
+      </div>
+    } @else {
+      <p class="item-count">{{ wishlist.length }} saved item(s)</p>
+      <div class="products-grid">
+        @for (product of wishlist; track product.id) {
+          <app-product-card [product]="product"></app-product-card>
+        }
+      </div>
+    }
+  </div>
+</div>

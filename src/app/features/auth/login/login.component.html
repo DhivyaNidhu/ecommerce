@@ -1,0 +1,74 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <a routerLink="/" class="brand-logo">🛍️ ShopZone</a>
+      <h1>Welcome Back</h1>
+      <p>Sign in to your account to continue shopping</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input
+          formControlName="email"
+          type="email"
+          placeholder="you@example.com"
+          [class.error]="isInvalid('email')"
+          autocomplete="email"
+        />
+        @if (isInvalid('email')) { <span class="error-msg">Please enter a valid email</span> }
+      </div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label>Password</label>
+          <a href="#" class="forgot-link" (click)="$event.preventDefault()">Forgot password?</a>
+        </div>
+        <div class="password-input">
+          <input
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Enter your password"
+            [class.error]="isInvalid('password')"
+            autocomplete="current-password"
+          />
+          <button type="button" class="toggle-pwd" (click)="showPassword = !showPassword">
+            @if (showPassword) { 🙈 } @else { 👁️ }
+          </button>
+        </div>
+        @if (isInvalid('password')) { <span class="error-msg">Password must be at least 6 characters</span> }
+      </div>
+
+      <label class="remember-me">
+        <input type="checkbox" formControlName="rememberMe" />
+        <span>Remember me for 30 days</span>
+      </label>
+
+      <button type="submit" class="btn-submit" [disabled]="loading">
+        @if (loading) { <span class="spinner"></span> Signing in... }
+        @else { Sign In }
+      </button>
+    </form>
+
+    <div class="demo-hint">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Demo: Enter any email and password to login
+    </div>
+
+    <div class="auth-footer">
+      Don't have an account? <a routerLink="/auth/register">Create one free</a>
+    </div>
+  </div>
+
+  <div class="auth-side">
+    <div class="side-content">
+      <h2>Shop Smarter,<br/>Live Better</h2>
+      <div class="benefits">
+        <div class="benefit">✓ Access your order history</div>
+        <div class="benefit">✓ Save your wishlist</div>
+        <div class="benefit">✓ Faster checkout</div>
+        <div class="benefit">✓ Exclusive member deals</div>
+      </div>
+    </div>
+  </div>
+</div>

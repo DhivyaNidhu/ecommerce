@@ -1,0 +1,236 @@
+<div class="checkout-page">
+  <div class="container">
+    <h1>Checkout</h1>
+
+    <!-- Progress Steps -->
+    <div class="steps-bar">
+      <div class="step" [class.active]="step >= 1" [class.done]="step > 1">
+        <div class="step-circle">@if (step > 1) { ✓ } @else { 1 }</div>
+        <span>Shipping</span>
+      </div>
+      <div class="step-line" [class.done]="step > 1"></div>
+      <div class="step" [class.active]="step >= 2" [class.done]="step > 2">
+        <div class="step-circle">@if (step > 2) { ✓ } @else { 2 }</div>
+        <span>Payment</span>
+      </div>
+      <div class="step-line" [class.done]="step > 2"></div>
+      <div class="step" [class.active]="step >= 3">
+        <div class="step-circle">3</div>
+        <span>Review</span>
+      </div>
+    </div>
+
+    <div class="checkout-layout">
+      <div class="checkout-form">
+
+        <!-- STEP 1: Shipping -->
+        @if (step === 1) {
+          <div class="form-section">
+            <h2>Shipping Address</h2>
+            <form [formGroup]="shippingForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>First Name *</label>
+                  <input formControlName="firstName" type="text" placeholder="John" [class.error]="isInvalid(shippingForm, 'firstName')" />
+                  @if (isInvalid(shippingForm, 'firstName')) { <span class="error-msg">First name is required</span> }
+                </div>
+                <div class="form-group">
+                  <label>Last Name *</label>
+                  <input formControlName="lastName" type="text" placeholder="Doe" [class.error]="isInvalid(shippingForm, 'lastName')" />
+                  @if (isInvalid(shippingForm, 'lastName')) { <span class="error-msg">Last name is required</span> }
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Email *</label>
+                  <input formControlName="email" type="email" placeholder="john@example.com" [class.error]="isInvalid(shippingForm, 'email')" />
+                  @if (isInvalid(shippingForm, 'email')) { <span class="error-msg">Valid email required</span> }
+                </div>
+                <div class="form-group">
+                  <label>Phone *</label>
+                  <input formControlName="phone" type="tel" placeholder="+1 (555) 000-0000" [class.error]="isInvalid(shippingForm, 'phone')" />
+                  @if (isInvalid(shippingForm, 'phone')) { <span class="error-msg">Phone is required</span> }
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Street Address *</label>
+                <input formControlName="street" type="text" placeholder="123 Main Street" [class.error]="isInvalid(shippingForm, 'street')" />
+                @if (isInvalid(shippingForm, 'street')) { <span class="error-msg">Address is required</span> }
+              </div>
+              <div class="form-group">
+                <label>Apartment, suite, etc. (optional)</label>
+                <input formControlName="apartment" type="text" placeholder="Apt 4B" />
+              </div>
+              <div class="form-row form-row-3">
+                <div class="form-group">
+                  <label>City *</label>
+                  <input formControlName="city" type="text" placeholder="New York" [class.error]="isInvalid(shippingForm, 'city')" />
+                  @if (isInvalid(shippingForm, 'city')) { <span class="error-msg">City is required</span> }
+                </div>
+                <div class="form-group">
+                  <label>State *</label>
+                  <input formControlName="state" type="text" placeholder="NY" [class.error]="isInvalid(shippingForm, 'state')" />
+                  @if (isInvalid(shippingForm, 'state')) { <span class="error-msg">State is required</span> }
+                </div>
+                <div class="form-group">
+                  <label>ZIP Code *</label>
+                  <input formControlName="zipCode" type="text" placeholder="10001" [class.error]="isInvalid(shippingForm, 'zipCode')" />
+                  @if (isInvalid(shippingForm, 'zipCode')) { <span class="error-msg">ZIP required</span> }
+                </div>
+              </div>
+              <div class="form-actions">
+                <a routerLink="/cart" class="btn-back">← Back to Cart</a>
+                <button type="button" class="btn-next" (click)="nextStep()">Continue to Payment →</button>
+              </div>
+            </form>
+          </div>
+        }
+
+        <!-- STEP 2: Payment -->
+        @if (step === 2) {
+          <div class="form-section">
+            <h2>Payment Method</h2>
+            <form [formGroup]="paymentForm">
+              <div class="payment-methods">
+                <label class="payment-option" [class.selected]="paymentForm.value.method === 'card'">
+                  <input type="radio" formControlName="method" value="card" />
+                  <span class="method-icon">💳</span>
+                  <span>Credit / Debit Card</span>
+                </label>
+                <label class="payment-option" [class.selected]="paymentForm.value.method === 'paypal'">
+                  <input type="radio" formControlName="method" value="paypal" />
+                  <span class="method-icon">🅿</span>
+                  <span>PayPal</span>
+                </label>
+              </div>
+
+              @if (paymentForm.value.method === 'card') {
+                <div class="card-form">
+                  <div class="form-group">
+                    <label>Card Number *</label>
+                    <input
+                      formControlName="cardNumber"
+                      type="text"
+                      placeholder="1234 5678 9012 3456"
+                      maxlength="19"
+                      (input)="formatCardNumber($event)"
+                      [class.error]="isInvalid(paymentForm, 'cardNumber')"
+                    />
+                    @if (isInvalid(paymentForm, 'cardNumber')) { <span class="error-msg">Valid card number required</span> }
+                  </div>
+                  <div class="form-group">
+                    <label>Cardholder Name *</label>
+                    <input formControlName="cardName" type="text" placeholder="John Doe" [class.error]="isInvalid(paymentForm, 'cardName')" />
+                    @if (isInvalid(paymentForm, 'cardName')) { <span class="error-msg">Name required</span> }
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Expiry Date *</label>
+                      <input formControlName="expiry" type="text" placeholder="MM/YY" maxlength="5" (input)="formatExpiry($event)" [class.error]="isInvalid(paymentForm, 'expiry')" />
+                      @if (isInvalid(paymentForm, 'expiry')) { <span class="error-msg">Format: MM/YY</span> }
+                    </div>
+                    <div class="form-group">
+                      <label>CVV *</label>
+                      <input formControlName="cvv" type="text" placeholder="123" maxlength="4" [class.error]="isInvalid(paymentForm, 'cvv')" />
+                      @if (isInvalid(paymentForm, 'cvv')) { <span class="error-msg">CVV required</span> }
+                    </div>
+                  </div>
+                </div>
+              }
+
+              @if (paymentForm.value.method === 'paypal') {
+                <div class="paypal-info">
+                  <p>You'll be redirected to PayPal to complete your purchase securely.</p>
+                </div>
+              }
+
+              <div class="form-actions">
+                <button type="button" class="btn-back" (click)="prevStep()">← Back</button>
+                <button type="button" class="btn-next" (click)="nextStep()">Review Order →</button>
+              </div>
+            </form>
+          </div>
+        }
+
+        <!-- STEP 3: Review -->
+        @if (step === 3) {
+          <div class="form-section">
+            <h2>Review Your Order</h2>
+
+            <div class="review-section">
+              <div class="review-header">
+                <h3>Shipping to</h3>
+                <button class="edit-btn" (click)="step = 1">Edit</button>
+              </div>
+              <div class="review-content">
+                <p>{{ shippingForm.value.firstName }} {{ shippingForm.value.lastName }}</p>
+                <p>{{ shippingForm.value.street }}{{ shippingForm.value.apartment ? ', ' + shippingForm.value.apartment : '' }}</p>
+                <p>{{ shippingForm.value.city }}, {{ shippingForm.value.state }} {{ shippingForm.value.zipCode }}</p>
+                <p>{{ shippingForm.value.email }} · {{ shippingForm.value.phone }}</p>
+              </div>
+            </div>
+
+            <div class="review-section">
+              <div class="review-header">
+                <h3>Payment</h3>
+                <button class="edit-btn" (click)="step = 2">Edit</button>
+              </div>
+              <div class="review-content">
+                @if (paymentForm.value.method === 'card') {
+                  <p>💳 Card ending in {{ paymentForm.value.cardNumber?.slice(-4) }}</p>
+                } @else {
+                  <p>🅿 PayPal</p>
+                }
+              </div>
+            </div>
+
+            <div class="review-items">
+              <h3>Items ({{ cart.itemCount }})</h3>
+              @for (item of cart.items; track item.product.id) {
+                <div class="review-item">
+                  <img [src]="item.product.thumbnail" [alt]="item.product.name" />
+                  <div>
+                    <strong>{{ item.product.name }}</strong>
+                    <span>Qty: {{ item.quantity }}</span>
+                  </div>
+                  <span class="review-item-price">₹{{ (item.product.price * item.quantity) | number:'1.2-2' }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-back" (click)="prevStep()">← Back</button>
+              <button class="btn-place-order" (click)="placeOrder()" [disabled]="submitting">
+                @if (submitting) { Placing Order... } @else { Place Order · ₹{{ cart.total | number:'1.2-2' }} }
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Order Summary -->
+      @if (cart) {
+        <div class="checkout-summary">
+          <h3>Order Summary</h3>
+          <div class="summary-items">
+            @for (item of cart.items; track item.product.id) {
+              <div class="summary-item">
+                <div class="item-img-wrapper">
+                  <img [src]="item.product.thumbnail" [alt]="item.product.name" />
+                  <span class="qty-badge">{{ item.quantity }}</span>
+                </div>
+                <span class="summary-item-name">{{ item.product.name }}</span>
+                <span>₹{{ (item.product.price * item.quantity) | number:'1.2-2' }}</span>
+              </div>
+            }
+          </div>
+          <div class="summary-totals">
+            <div class="total-row"><span>Subtotal</span><span>₹{{ cart.subtotal | number:'1.2-2' }}</span></div>
+            <div class="total-row"><span>Shipping</span><span>{{ cart.shipping === 0 ? 'FREE' : '₹' + (cart.shipping | number:'1.2-2') }}</span></div>
+            <div class="total-row grand"><span>Total</span><span>₹{{ cart.total | number:'1.2-2' }}</span></div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,99 @@
+<div class="orders-page">
+  <div class="container">
+    <div class="profile-layout">
+      <aside class="profile-sidebar">
+        <nav class="profile-nav">
+          <a routerLink="/profile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Profile
+          </a>
+          <a routerLink="/profile/orders" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            My Orders
+          </a>
+          <a routerLink="/wishlist">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Wishlist
+          </a>
+        </nav>
+      </aside>
+
+      <main>
+        <div class="section-header">
+          <h1>Order History</h1>
+          <span class="order-count">{{ orders.length }} orders</span>
+        </div>
+
+        @if (loading) {
+          <app-loading-spinner message="Loading orders..."></app-loading-spinner>
+        } @else if (orders.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h3>No orders yet</h3>
+            <p>When you place orders, they'll appear here.</p>
+            <a routerLink="/products" class="btn-shop">Start Shopping</a>
+          </div>
+        } @else {
+          <div class="orders-list">
+            @for (order of orders; track order.id) {
+              <div class="order-card">
+                <div class="order-header" (click)="toggleExpand(order.id)">
+                  <div class="order-meta">
+                    <span class="order-id">{{ order.id }}</span>
+                    <span class="order-date">{{ order.createdAt | date:'MMM d, yyyy' }}</span>
+                  </div>
+                  <div class="order-summary-row">
+                    <span [class]="'status-badge ' + getStatusColor(order.status)">{{ order.status | titlecase }}</span>
+                    <span class="order-total">₹{{ order.total | number:'1.2-2' }}</span>
+                    <span class="order-items">{{ order.items.length }} item(s)</span>
+                  </div>
+                  <svg class="chevron" [class.rotated]="expandedOrder === order.id" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+
+                @if (expandedOrder === order.id) {
+                  <div class="order-details">
+                    <div class="order-items-list">
+                      @for (item of order.items; track item.productId) {
+                        <div class="order-item">
+                          <img [src]="item.productImage" [alt]="item.productName" />
+                          <div class="item-info">
+                            <strong>{{ item.productName }}</strong>
+                            <span>Qty: {{ item.quantity }} × ₹{{ item.price | number:'1.2-2' }}</span>
+                          </div>
+                          <span class="item-total">₹{{ (item.price * item.quantity) | number:'1.2-2' }}</span>
+                        </div>
+                      }
+                    </div>
+
+                    <div class="order-info-grid">
+                      <div class="info-block">
+                        <h4>Shipping Address</h4>
+                        <p>{{ order.shippingAddress.street }}</p>
+                        <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} {{ order.shippingAddress.zipCode }}</p>
+                      </div>
+                      <div class="info-block">
+                        <h4>Payment</h4>
+                        <p>{{ order.paymentMethod }}</p>
+                        @if (order.trackingNumber) {
+                          <p><strong>Tracking:</strong> {{ order.trackingNumber }}</p>
+                        }
+                      </div>
+                      <div class="info-block">
+                        <h4>Order Total</h4>
+                        <div class="total-breakdown">
+                          <span>Subtotal: ₹{{ order.subtotal | number:'1.2-2' }}</span>
+                          <span>Shipping: {{ order.shipping === 0 ? 'FREE' : '₹' + (order.shipping | number:'1.2-2') }}</span>
+                          <strong>Total: ₹{{ order.total | number:'1.2-2' }}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+</div>

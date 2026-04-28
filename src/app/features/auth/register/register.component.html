@@ -1,0 +1,91 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <a routerLink="/" class="brand-logo">🛍️ ShopZone</a>
+      <h1>Create Your Account</h1>
+      <p>Join thousands of happy shoppers</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input formControlName="firstName" type="text" placeholder="John" [class.error]="isInvalid('firstName')" />
+          @if (isInvalid('firstName')) { <span class="error-msg">At least 2 characters</span> }
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input formControlName="lastName" type="text" placeholder="Doe" [class.error]="isInvalid('lastName')" />
+          @if (isInvalid('lastName')) { <span class="error-msg">At least 2 characters</span> }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input formControlName="email" type="email" placeholder="you@example.com" [class.error]="isInvalid('email')" />
+        @if (isInvalid('email')) { <span class="error-msg">Valid email is required</span> }
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="password-input">
+          <input
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Min 8 characters"
+            [class.error]="isInvalid('password')"
+          />
+          <button type="button" class="toggle-pwd" (click)="showPassword = !showPassword">
+            @if (showPassword) { 🙈 } @else { 👁️ }
+          </button>
+        </div>
+        @if (isInvalid('password')) { <span class="error-msg">At least 8 characters required</span> }
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input
+          formControlName="confirmPassword"
+          type="password"
+          placeholder="Repeat your password"
+          [class.error]="isInvalid('confirmPassword')"
+        />
+        @if (isInvalid('confirmPassword')) {
+          @if (form.get('confirmPassword')?.errors?.['mismatch']) {
+            <span class="error-msg">Passwords do not match</span>
+          } @else {
+            <span class="error-msg">Please confirm your password</span>
+          }
+        }
+      </div>
+
+      <label class="terms-check" [class.error-label]="isInvalid('terms')">
+        <input type="checkbox" formControlName="terms" />
+        <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+      </label>
+      @if (isInvalid('terms')) { <span class="error-msg">You must accept the terms</span> }
+
+      <button type="submit" class="btn-submit" [disabled]="loading">
+        @if (loading) { <span class="spinner"></span> Creating account... }
+        @else { Create Account }
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a routerLink="/auth/login">Sign in</a>
+    </div>
+  </div>
+
+  <div class="auth-side">
+    <div class="side-content">
+      <h2>Join ShopZone Today</h2>
+      <div class="benefits">
+        <div class="benefit">✓ Free account, no credit card needed</div>
+        <div class="benefit">✓ Track all your orders in one place</div>
+        <div class="benefit">✓ Save items to your wishlist</div>
+        <div class="benefit">✓ Get exclusive member discounts</div>
+        <div class="benefit">✓ Faster checkout process</div>
+      </div>
+    </div>
+  </div>
+</div>
